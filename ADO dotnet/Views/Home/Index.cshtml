@@ -1,0 +1,156 @@
+﻿@model IEnumerable<RLG_Project_ADO_1.Models.ItemModel>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
+<script src="~/Scripts/jquery.validate.js"></script>
+
+@{
+    ViewBag.Title = "Home Page";
+}
+
+
+
+<html>
+<head>
+
+    <meta name="viewport" content="width=device-width" />
+    <title>Records</title>
+</head>
+<body>
+    <br />
+    <br />
+    <br />
+    <br />
+    <h2><u>Records</u></h2>
+    <br />
+    <table id="tblItems" class="table">
+        <tr style="font:bold; font-size:large">
+            <td><u>Sl.No.</u></td>
+            <td><u>Items</u></td>
+            <td><u>Costs</u></td>
+            <td><u>Options</u></td>
+        </tr>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td class="Id">
+                    <span>@item.Id</span>
+                </td>
+                <td class="Name">
+                    <span>@item.Name</span>
+                    <input type="text" class="textbox control-label col-md-5" value="@item.Name" style="display:none" />
+                </td>
+                <td class="Cost">
+                    <span>@item.Cost</span>
+                    <input type="text" class="textbox control-label col-md-3" value="@item.Cost" style="display:none" required="required" />
+                </td>
+                <td>
+                    <a id="btnEdit" type="button" value="Edit" class="Edit btn btn-primary">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                        <span> Edit</span>
+                    </a>
+
+                    <input id="btnUpadte" type="button" class="Update btn btn-primary btn-success" style="display:none" value="Update" />
+                    <input id="btnCancel" type="button" class="Cancel btn btn-primary btn-warning" style="display:none" value="Cancel" />
+                </td>
+            </tr>
+        }
+    </table>
+    <script type="text/javascript">
+
+        //Edit event handler.
+        $("body").on("click", "#tblItems .Edit", function () {
+            var row = $(this).closest("tr");
+            $("td", row).each(function () {
+                if ($(this).find("input").length > 0) {
+                    $(this).find("input").show();
+                    $(this).find("span").hide();
+                }
+            });
+            row.find(".Update").show();
+            row.find(".Cancel").show();
+            $(this).hide();
+        });
+
+        //Update event handler.
+        $("body").on("click", "#tblItems .Update", function () {
+            var row = $(this).closest("tr");
+
+            var item = {};
+            item.Id = row.find(".Id").find("span").html();
+            item.Name = row.find(".Name").find(".textbox").val();
+            item.Cost = row.find(".Cost").find(".textbox").val();
+            if (item.Name == "" || item.Name.charAt(0) == " " || allLetter(item.Name) == false) {
+                alert("Enter a valid Name");
+                return false;
+            }
+            else if (item.Cost == "" || item.Cost <= 0 || allnumeric(item.Cost) == false) {
+                alert("Enter a valid cost");
+                return false;
+            }
+
+            $("td", row).each(function () {
+                if ($(this).find("input").length > 0) {
+                    var span = $(this).find("span");
+                    var input = $(this).find(".textbox");
+                    span.html(input.val());
+                    span.show();
+                    input.hide();
+                }
+            });
+          
+            row.find(".Edit").show();
+            row.find(".Cancel").hide();
+            $(this).hide();
+            $.ajax({
+                type: "POST",
+                url: "/Home/UpdateItem",
+                data: '{item:' + JSON.stringify(item) + '}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (s) {
+                    alert('Enter a Valid Name');
+                    return false;
+                } 
+
+            });
+            
+        });
+
+        //Cancel event handler.
+        $("body").on("click", "#tblItems .Cancel", function () {
+            var row = $(this).closest("tr");
+            $("td", row).each(function () {
+                if ($(this).find("input").length > 0) {
+                    var span = $(this).find("span");
+                    var input = $(this).find("input");
+                    span.show();
+                    input.hide();
+                }
+            });
+            row.find(".Edit").show();
+            row.find(".Update").hide();
+            $(this).hide();
+        });
+
+        function allLetter(inputtxt) {
+
+            var letters = /^[A-Za-z ]+$/;
+            if (inputtxt.match(letters)) 
+                return true;
+            else 
+                return false;
+        }
+
+        function allnumeric(inptxt){
+
+	        var numbers = /^[0-9]+$/;
+
+	        if(inptxt.match(numbers))
+                return true;
+            else
+                return false;
+        }
+
+    </script>
+</body>
+</html>
