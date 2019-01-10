@@ -1,22 +1,16 @@
-﻿@model IEnumerable<RLG_Project_ADO_1.Models.ItemModel>
+@model IEnumerable<RLG_Project_ADO_1.Models.ItemModel>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <script type="text/javascript" src="http://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
 <script src="~/Scripts/jquery.validate.js"></script>
-
 @{
     ViewBag.Title = "Home Page";
 }
-
-
-
 <html>
 <head>
-
     <meta name="viewport" content="width=device-width" />
     <title>Records</title>
 </head>
 <body>
-    <br />
     <br />
     <br />
     <br />
@@ -32,16 +26,16 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td  class="Id">
+                <td class="Id">
                     <span>@item.Id</span>
                 </td>
                 <td  class="Name">
                     <span>@item.Name</span>
-                    <input type="text" class="textbox control-label col-md-5" value="@item.Name" style="display:none" />
+                    <input type="text" class="textbox control-label col-md-5" onkeypress="return isLetter(event)" value="@item.Name" style="display:none" />
                 </td>
                 <td  class="Cost">
                     <span>@item.Cost</span>
-                    <input type="text" class="textbox control-label col-md-3" value="@item.Cost" style="display:none" required="required" />
+                    <input type="text" class="textbox control-label col-md-3" onkeypress="return isNumber(event)" value="@item.Cost" style="display:none" required="required" />
                 </td>
                 <td>
                     <a id="btnEdit" type="button" value="Edit" class="Edit btn btn-primary">
@@ -50,7 +44,7 @@
                     </a>
 
                     <input id="btnUpadte" type="button" class="Update btn btn-primary btn-success" style="display:none" value="Update" />
-                    <input id="btnCancel" type="button" class="Cancel btn btn-primary btn-warning" style="display:none" value="Cancel" />
+                    <input id="btnCancel" type="button" class="Cancel btn btn-primary btn-warning"  style="display:none" value="Cancel" />
                 </td>
             </tr>
         }
@@ -79,11 +73,11 @@
             item.Id = row.find(".Id").find("span").html();
             item.Name = row.find(".Name").find(".textbox").val();
             item.Cost = row.find(".Cost").find(".textbox").val();
-            if (item.Name == "" || item.Name.charAt(0) == " " || allLetter(item.Name) == false) {
+            if (item.Name == "" || item.Name.charAt(0) == " ") {
                 alert("Enter a valid Name");
                 return false;
             }
-            else if (item.Cost == "" || item.Cost <= 0 || allnumeric(item.Cost) == false) {
+            else if (item.Cost == "" || item.Cost <= 0) {
                 alert("Enter a valid cost");
                 return false;
             }
@@ -132,23 +126,22 @@
             $(this).hide();
         });
 
-        function allLetter(inputtxt) {
-
-            var letters = /^[A-Za-z ]+$/;
-            if (inputtxt.match(letters)) 
+        function isLetter(evt) {
+            evt = (evt) ? evt : window.event;
+            var charCode = (evt.which) ? evt.which : evt.keyCode;
+            if ((charCode >= 65 && charCode <= 90) || (charCode >= 97 && charCode <= 122) || (charCode == 32)) {
                 return true;
-            else 
-                return false;
+            }
+            return false;
         }
 
-        function allnumeric(inptxt){
-
-	        var numbers = /^[0-9]+$/;
-
-	        if(inptxt.match(numbers))
-                return true;
-            else
+        function isNumber(evt) {
+            evt = (evt) ? evt : window.event;
+            var charCode = (evt.which) ? evt.which : evt.keyCode;
+            if ((charCode < 48 || charCode > 57)) {
                 return false;
+            }
+            return true;
         }
 
     </script>
