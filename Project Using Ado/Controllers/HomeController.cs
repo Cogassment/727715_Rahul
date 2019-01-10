@@ -1,4 +1,4 @@
-﻿using RLG_Project_ADO_1.Models;
+using RLG_Project_ADO_1.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -13,15 +13,13 @@ namespace RLG_Project_ADO_1.Controllers
     {
         public ActionResult Index()
         {
-            SqlConnection con = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=D:\RLG Project ADO 1\RLG Project ADO 1\App_Data\Item.mdf;Integrated Security=True");
-
-            con.Open();
-            SqlCommand cmd = new SqlCommand("SELECT * from Items", con);
-            cmd.ExecuteNonQuery();
+            SqlConnection sqlConnection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=D:\RLG Project ADO 1\RLG Project ADO 1\App_Data\Item.mdf;Integrated Security=True");
+            sqlConnection.Open();
+            SqlCommand sqlCommand = new SqlCommand("SELECT * from Items",sqlConnection);
+            sqlCommand.ExecuteNonQuery();
             List<ItemModel> it = new List<ItemModel>();
             ItemModel details = new ItemModel();
-
-            using (SqlDataReader read = cmd.ExecuteReader())
+            using (SqlDataReader read = sqlCommand.ExecuteReader())
             {
                 while (read.Read())
                 {
@@ -31,33 +29,27 @@ namespace RLG_Project_ADO_1.Controllers
                     details.Cost = int.Parse(read["Cost"].ToString());
                     it.Add(details);
                 }
-                con.Close();
+                sqlConnection.Close();
             }
             return View(it);
         }
-
+        // On Click Update
         [HttpPost]
         public ActionResult UpdateItem(ItemModel item)
         {
-                string query = "update Items SET Name='" + item.Name + "',Cost=" + item.Cost + " where Id=" + item.Id;
+                string sqlquery = "update Items SET Name='" + item.Name + "',Cost=" + item.Cost + " where Id=" + item.Id;
                 string constr = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=D:\RLG Project ADO 1\RLG Project ADO 1\App_Data\Item.mdf;Integrated Security=True";
-                using (SqlConnection con = new SqlConnection(constr))
+                using (SqlConnection sqlConnection = new SqlConnection(constr))
                 {
-                    con.Open();
-                    using (SqlCommand cmd = new SqlCommand(query, con))
+                sqlConnection.Open();
+                    using (SqlCommand sqlCommand = new SqlCommand(sqlquery, sqlConnection))
                     {
-                        cmd.Connection = con;
-
-                        cmd.ExecuteNonQuery();
-
+                        sqlCommand.Connection = sqlConnection;
+                        sqlCommand.ExecuteNonQuery();
                     }
-                    con.Close();
+                    sqlConnection.Close();
                 }
-
-                return new EmptyResult();
-            
+                return new EmptyResult();            
         }
-
-
     }
 }
