@@ -23,21 +23,21 @@ namespace RLG_Project_ADO_1.Controllers
                 SqlCommand sqlCommand = new SqlCommand("Select * From Items", sqlConnection);
                 SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(sqlCommand.CommandText, sqlConnection);
                 sqlConnection.Open();
-                DataTable dt = new DataTable();
-                sqlDataAdapter.Fill(dt);
+                DataTable dataTable = new DataTable();
+                sqlDataAdapter.Fill(dataTable);
                 sqlConnection.Close();
 
-                List<ItemModel> it = new List<ItemModel>();
-                foreach (DataRow item in dt.Rows.Cast<DataRow>().ToList())
+                List<ItemModel> itemModels = new List<ItemModel>();
+                foreach (DataRow item in dataTable.Rows.Cast<DataRow>().ToList())
                 {
                     ItemModel details = new ItemModel();
                     details.Id = int.Parse(item[0].ToString());
                     details.Name = (item[1].ToString());
                     details.Cost = int.Parse(item[2].ToString());
-                    it.Add(details);
+                    itemModels.Add(details);
                 }
 
-                return View(it);
+                return View(itemModels);
             }
         }
         /// Summary
