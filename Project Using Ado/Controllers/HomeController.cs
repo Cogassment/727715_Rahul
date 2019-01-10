@@ -1,55 +1,63 @@
 using RLG_Project_ADO_1.Models;
-using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using System.Text.RegularExpressions;
+using System.Web.UI.WebControls;
 
 namespace RLG_Project_ADO_1.Controllers
 {
     public class HomeController : Controller
     {
+        string constr = ConfigurationManager.ConnectionStrings["Connectionstring"].ConnectionString;
+        /// Summary
+        /// The default class which will be used to extract the database data and will be redirect to the Index View.
+        /// Summary
         public ActionResult Index()
         {
-            SqlConnection sqlConnection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=D:\RLG Project ADO 1\RLG Project ADO 1\App_Data\Item.mdf;Integrated Security=True");
-            sqlConnection.Open();
-            SqlCommand sqlCommand = new SqlCommand("SELECT * from Items",sqlConnection);
-            sqlCommand.ExecuteNonQuery();
-            List<ItemModel> it = new List<ItemModel>();
-            ItemModel details = new ItemModel();
-            using (SqlDataReader read = sqlCommand.ExecuteReader())
+            using (SqlConnection sqlConnection = new SqlConnection(constr))
             {
-                while (read.Read())
+
+                SqlCommand sqlCommand = new SqlCommand("Select * From Items", sqlConnection);
+                SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(sqlCommand.CommandText, sqlConnection);
+                sqlConnection.Open();
+                DataTable dt = new DataTable();
+                sqlDataAdapter.Fill(dt);
+                sqlConnection.Close();
+
+                List<ItemModel> it = new List<ItemModel>();
+                foreach (DataRow item in dt.Rows.Cast<DataRow>().ToList())
                 {
-                    details = new ItemModel();
-                    details.Id = int.Parse(read["Id"].ToString());
-                    details.Name = (read["Name"].ToString());
-                    details.Cost = int.Parse(read["Cost"].ToString());
+                    ItemModel details = new ItemModel();
+                    details.Id = int.Parse(item[0].ToString());
+                    details.Name = (item[1].ToString());
+                    details.Cost = int.Parse(item[2].ToString());
                     it.Add(details);
                 }
-                sqlConnection.Close();
+
+                return View(it);
             }
-            return View(it);
         }
-        // On Click Update
+        /// Summary
+        /// // On Click Update Button, the following ActionResult will update the entered valid value in the database.
+        /// Summary
         [HttpPost]
         public ActionResult UpdateItem(ItemModel item)
         {
-                string sqlquery = "update Items SET Name='" + item.Name + "',Cost=" + item.Cost + " where Id=" + item.Id;
-                string constr = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=D:\RLG Project ADO 1\RLG Project ADO 1\App_Data\Item.mdf;Integrated Security=True";
-                using (SqlConnection sqlConnection = new SqlConnection(constr))
-                {
+            string sqlquery = "Update Items Set Name='" + item.Name + "',Cost=" + item.Cost + " where Id=" + item.Id;
+            using (SqlConnection sqlConnection = new SqlConnection(constr))
+            {
                 sqlConnection.Open();
-                    using (SqlCommand sqlCommand = new SqlCommand(sqlquery, sqlConnection))
-                    {
-                        sqlCommand.Connection = sqlConnection;
-                        sqlCommand.ExecuteNonQuery();
-                    }
-                    sqlConnection.Close();
+                using (SqlCommand sqlCommand = new SqlCommand(sqlquery, sqlConnection))
+                {
+                    sqlCommand.Connection = sqlConnection;
+                    sqlCommand.ExecuteNonQuery();
                 }
-                return new EmptyResult();            
+                sqlConnection.Close();
+            }
+            return new EmptyResult();
         }
     }
 }
