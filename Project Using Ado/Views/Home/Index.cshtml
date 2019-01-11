@@ -31,11 +31,11 @@
                 </td>
                 <td  class="Name">
                     <span>@item.Name</span>
-                    <input type="text" class="textbox control-label col-md-5" onkeypress="return isLetter(event)" value="@item.Name" style="display:none" />
+                    <input type="text" class="textbox control-label col-md-5" oncopy="return false" onpaste="return false" onkeypress="return isLetter(event)" value="@item.Name" style="display:none" />
                 </td>
                 <td  class="Cost">
                     <span>@item.Cost</span>
-                    <input type="text" class="textbox control-label col-md-3" onkeypress="return isNumber(event)" value="@item.Cost" style="display:none" required="required" />
+                    <input type="text" class="textbox control-label col-md-3" oncopy="return false" onpaste="return false" onkeypress="return isNumber(event)" value="@item.Cost" style="display:none" required="required" />
                 </td>
                 <td>
                     <a id="btnEdit" type="button" value="Edit" class="Edit btn btn-primary">
@@ -126,6 +126,7 @@
             $(this).hide();
         });
 
+        // Allow Only letters and spaces
         function isLetter(evt) {
             evt = (evt) ? evt : window.event;
             var charCode = (evt.which) ? evt.which : evt.keyCode;
@@ -135,6 +136,7 @@
             return false;
         }
 
+        // Allow Only Numbers       
         function isNumber(evt) {
             evt = (evt) ? evt : window.event;
             var charCode = (evt.which) ? evt.which : evt.keyCode;
